@@ -18,8 +18,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Mongodb connection
-const mongodbURI = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@campaign.ohptr.mongodb.net/campaign?retryWrites=true&w=majority`;
-mongoose.connect(mongodbURI, (err) => {
+mongoose.connect(process.env.MONGODB_URI, (err) => {
   if (err) {
     console.error(err);
   } else {
