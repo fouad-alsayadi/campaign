@@ -20,6 +20,7 @@ exports.config = () => {
       clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
       clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
       callbackURL: "/auth/google/callback",
+      proxy: true
     },
     (accessToken, refreshTokem, profile, done) => {
       console.log("access token", accessToken);
