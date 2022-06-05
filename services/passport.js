@@ -3,6 +3,17 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const mongoose = require("mongoose");
 const User = mongoose.model("users");
 
+// User cookies set up
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  User.findById(id).then((user) => {
+    done(null, user);
+  });
+});
+
 exports.config = () => {
   const campaignGoogleStrategy = new GoogleStrategy(
     {
@@ -13,7 +24,7 @@ exports.config = () => {
     (accessToken, refreshTokem, profile, done) => {
       console.log("access token", accessToken);
       console.log("refresh token", refreshTokem);
-      console.log("profile", profile);
+      // console.log("profile", profile);
       User.findOne({ googleId: profile.id }).then((existingUser) => {
         if (existingUser) {
           console.log("User ", profile.id, "Exists");
