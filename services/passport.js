@@ -20,23 +20,18 @@ exports.config = () => {
       clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
       clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
       callbackURL: "/auth/google/callback",
-      proxy: true
+      proxy: true,
     },
-    (accessToken, refreshTokem, profile, done) => {
-      console.log("access token", accessToken);
-      console.log("refresh token", refreshTokem);
-      // console.log("profile", profile);
-      User.findOne({ googleId: profile.id }).then((existingUser) => {
-        if (existingUser) {
-          console.log("User ", profile.id, "Exists");
-          done(null, existingUser);
-        } else {
-          const user = new User({
-            googleId: profile.id,
-          });
-          user.save().then((user) => done(null, user));
-        }
-      });
+    async (accessToken, refreshTokem, profile, done) => {
+      console.log("Google auth verify callback starts");
+      const existingUser = await User.findOne({ googleId: profile.id });
+      if (existingUser) {
+        console.log("User ", profile.id, "Exists");
+        done(null, existingUser);
+      } else {    // user first seen     
+        const newUser = await new User({googleId: profile.id}).save();
+        done(null, newUser);        
+      }
     }
   );
 

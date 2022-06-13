@@ -16,10 +16,11 @@ app.use(
 // Tell passport to be aware of sessions and let express know as well
 app.use(passport.initialize());
 app.use(passport.session());
-
+console.log("Trying to conect to mongodb")
 // Mongodb connection
 mongoose.connect(process.env.MONGODB_URI, (err) => {
   if (err) {
+    console.error("Error connecting to mongoose db : ")
     console.error(err);
   } else {
     console.log("Connected to the db susccesfully");
@@ -32,6 +33,13 @@ require("./models/user"); // Register user model in mongoose
 require("./services/passport").config(); // register Google OAuth
 require("./routes/authRoutes").config(app); // Handle Google OAuth communications
 
+if(process.env.NODE_ENV === "production"){
+  app.use(express.static("client/build"))
+  const path = require('path');
+  app.get("*", (req, res)=>{
+    res.sendFile(path.resolve(__dirname,"client","build","index.html"));
+  });
+}
 app.get("/", (req, res) => {
   res.send({ bye: "there not near " + JSON.stringify(req.session) });
 });
